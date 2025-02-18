@@ -2386,6 +2386,17 @@
         "https://via.placeholder.com/300"
       ],
       "id": "3245942"
+    },
+    {
+      "name": "Luxury Villa",
+      "smart_location": "Los Angeles, CA",
+      "price": 250,
+      "review_scores_rating": 95,
+      "guestFavorite": true,
+      "images": [
+        "https://via.placeholder.com/300"
+      ],
+      "id": "4704730"
     }
   ]
 }
