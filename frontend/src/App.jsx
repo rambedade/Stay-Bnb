@@ -1,15 +1,17 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import CategoryFilter from "./components/CategoryFilter";
 import PropertyList from "./components/PropertyList";
-
+import PropertyDetails from "./components/PropertyDetails"; // Import the new details page
 
 function App() {
   return (
-    <div>
-      <Navbar />
-      {/* <CategoryFilter />    */}
-      <PropertyList />
-    </div>
+    <Router>
+      <Navbar /> {/* Keep Navbar always visible */}
+      <Routes>
+        <Route path="/" element={<PropertyList />} />
+        <Route path="/property/:id" element={<PropertyDetails />} />
+      </Routes>
+    </Router>
   );
 }
 

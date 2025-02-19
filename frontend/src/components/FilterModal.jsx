@@ -79,7 +79,7 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters, properties }) => {
               value={priceRange}
               onChange={(e, newValue) => setPriceRange(newValue)}
               min={20}
-              max={100}
+              max={200}
               valueLabelDisplay="auto"
               sx={{ color: "#ff385c" }}
             />

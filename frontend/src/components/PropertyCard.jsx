@@ -1,16 +1,20 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaHeart, FaStar, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const PropertyCard = ({ property }) => {
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isHovered, setIsHovered] = useState(false); // Track hover state
+  const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate(); // ✅ Hook for navigation
 
-  const nextImage = () => {
+  const nextImage = (e) => {
+    e.stopPropagation(); // Prevent navigation on button click
     setCurrentImage((prev) => (prev + 1) % property.images.length);
   };
 
-  const prevImage = () => {
+  const prevImage = (e) => {
+    e.stopPropagation(); // Prevent navigation on button click
     setCurrentImage(
       (prev) => (prev - 1 + property.images.length) % property.images.length
     );
@@ -19,8 +23,9 @@ const PropertyCard = ({ property }) => {
   return (
     <div
       className="bg-white rounded-sm overflow-hidden shadow-md cursor-pointer transition-all hover:shadow-lg border-none"
-      onMouseEnter={() => setIsHovered(true)} // Set hover state to true
-      onMouseLeave={() => setIsHovered(false)} // Reset hover state when mouse leaves
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={() => navigate(`/property/${property.id}`)} // ✅ Navigate on click
     >
       {/* Image Carousel */}
       <div className="relative w-full h-84 overflow-hidden rounded-t-xl rounded-b-xl">
@@ -70,7 +75,10 @@ const PropertyCard = ({ property }) => {
         {/* Favorite (Heart) Icon */}
         <div
           className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md cursor-pointer"
-          onClick={() => setIsFavorite(!isFavorite)}
+          onClick={(e) => {
+            e.stopPropagation(); // ✅ Prevent navigation when clicking the heart
+            setIsFavorite(!isFavorite);
+          }}
         >
           <FaHeart
             className={`text-lg ${
