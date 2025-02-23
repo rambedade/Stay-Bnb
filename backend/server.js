@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Property = require("./models/property");
 const User = require("./models/User");
+const Booking = require("./models/Booking")
 
 dotenv.config();
 
@@ -95,21 +96,81 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 // ✅ JWT Middleware - Protect Routes
+// Middleware to verify user authentication
 const verifyToken = (req, res, next) => {
-  const token = req.header("Authorization");
-  
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from "Bearer <token>"
+
   if (!token) {
-    return res.status(401).json({ message: "Access Denied. No token provided." });
+    return res.status(401).json({ message: "Unauthorized. Please log in." });
   }
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded; // Store user info in request
-    next(); // Move to the next middleware
+    req.user = decoded; // Attach user data to the request
+    next();
   } catch (error) {
-    res.status(400).json({ message: "Invalid token" });
+    return res.status(403).json({ message: "Invalid token. Please log in again." });
   }
 };
+
+// ✅ Booking API (Protected Route)
+app.post("/api/bookings", verifyToken, async (req, res) => {
+  try {
+    const { propertyId, checkIn, checkOut, guests } = req.body;
+    const userId = req.user.id; // ✅ Get user ID from token
+
+    // Create new booking
+    const booking = new Booking({
+      userId,
+      propertyId,
+      checkIn,
+      checkOut,
+      guests,
+    });
+
+    await booking.save();
+    res.status(201).json({ message: "Booking confirmed!", booking });
+  } catch (error) {
+    res.status(500).json({ message: "Error saving booking", error: error.message });
+  }
+});
+
+// ✅ Get User's Booking History (Protected Route)
+app.get("/api/bookings/user", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1]; // Extract token
+    if (!token) return res.status(401).json({ message: "Unauthorized. No token provided." });
+
+    const decoded = jwt.verify(token, SECRET_KEY); // Verify token
+    const userId = decoded.id; // Get user ID from token
+
+    const bookings = await Booking.find({ userId }).populate("propertyId"); // Get user bookings
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching bookings", error: error.message });
+  }
+});
+
+// Search properties by name or location
+app.get("/api/properties/search", async (req, res) => {
+  try {
+    const { query } = req.query; // Get search term from URL params
+    if (!query) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    const properties = await Property.find({
+      $or: [
+        { name: { $regex: query, $options: "i" } }, // Case-insensitive name match
+        { smart_location: { $regex: query, $options: "i" } } // Location match
+      ],
+    });
+
+    res.json(properties);
+  } catch (error) {
+    res.status(500).json({ message: "Error searching properties", error: error.message });
+  }
+});
 
 
 

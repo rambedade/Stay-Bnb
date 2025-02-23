@@ -9,7 +9,8 @@ import logo2 from "../assets/logo2.png";
 const Navbar = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Manage dropdown visibility
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(""); // ✅ State for search input
 
   // ✅ Check if user is logged in (Token in localStorage)
   useEffect(() => {
@@ -19,11 +20,17 @@ const Navbar = () => {
 
   // ✅ Handle Logout
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove token
-    localStorage.removeItem("userId"); // Remove user ID (if stored)
+    localStorage.removeItem("token"); 
+    localStorage.removeItem("userId"); 
     setIsLoggedIn(false);
-    setIsDropdownOpen(false); // Close dropdown on logout
-    navigate("/"); // Redirect to home
+    setIsDropdownOpen(false); 
+    navigate("/"); 
+  };
+
+  // ✅ Handle Search Submission
+  const handleSearch = () => {
+    if (searchQuery.trim() === "") return;
+    navigate(`/search-results?query=${searchQuery}`);
   };
 
   return (
@@ -92,33 +99,17 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
+      {/* ✅ Search Bar (Now Functional) */}
       <div className="flex items-center border rounded-full border-pink-100 px-4 py-2 shadow-md hover:shadow-lg h-16 transition-all bg-white w-full max-w-3xl relative">
-        <div className="flex flex-col items-start px-4">
-          <span className="text-xs font-semibold text-gray-800">Where</span>
-          <input type="text" placeholder="Search destinations" className="outline-none text-sm text-gray-500 bg-transparent" />
-        </div>
-        <div className="border-[0.3px] border-gray-300 h-8"></div>
-
-        <div className="flex flex-col items-start px-4">
-          <span className="text-xs font-semibold text-gray-800">Check in</span>
-          <input type="text" placeholder="Add dates" className="outline-none text-sm text-gray-500 bg-transparent" />
-        </div>
-        <div className="border-[0.3px] border-gray-300 h-8"></div>
-
-        <div className="flex flex-col items-start px-4">
-          <span className="text-xs font-semibold text-gray-800">Check out</span>
-          <input type="text" placeholder="Add dates" className="outline-none text-sm text-gray-500 bg-transparent" />
-        </div>
-        <div className="border-[0.3px] border-gray-300 h-8"></div>
-
-        <div className="flex flex-col items-start px-4">
-          <span className="text-xs font-semibold text-gray-800">Who</span>
-          <input type="text" placeholder="Add guests" className="outline-none text-sm text-gray-500 bg-transparent" />
-        </div>
-
-        {/* Search Button */}
-        <button className="bg-red-500 text-white p-3 rounded-full absolute right-3 shadow-md">
+        <input
+          type="text"
+          placeholder="Search destinations"
+          className="outline-none text-sm text-gray-500 bg-transparent w-full px-4"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyPress={(e) => e.key === "Enter" && handleSearch()} // ✅ Search on Enter
+        />
+        <button className="bg-red-500 text-white p-3 rounded-full absolute right-3 shadow-md" onClick={handleSearch}>
           <FaSearch />
         </button>
       </div>
