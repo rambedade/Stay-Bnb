@@ -1,16 +1,20 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import PropertyList from "./components/PropertyList";
-import PropertyDetails from "./components/PropertyDetails"; // Import the new details page
+import PropertyDetails from "./components/PropertyDetails";
+import AuthPage from "./components/AuthPage";  // ✅ Import AuthPage
 
 function App() {
   return (
     <Router>
-      <Navbar /> {/* Keep Navbar always visible */}
-      <Routes>
-        <Route path="/" element={<PropertyList />} />
-        <Route path="/property/:id" element={<PropertyDetails />} />
-      </Routes>
+      <div>
+        <Navbar />  
+        <Routes>
+          <Route path="/" element={<PropertyList />} />
+          <Route path="/property/:id" element={<PropertyDetails />} />
+          <Route path="/auth" element={<AuthPage />} />  {/* ✅ Single Auth Page */}
+        </Routes>
+      </div>
     </Router>
   );
 }

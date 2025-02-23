@@ -10,7 +10,7 @@ const PropertyList = ({ selectedCategory }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/properties")
+    fetch("http://localhost:8080/api/properties")
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`);

@@ -6,7 +6,7 @@ const PropertyCard = ({ property }) => {
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const navigate = useNavigate(); // ✅ Hook for navigation
+  const navigate = useNavigate(); //  Hook for navigation
 
   const nextImage = (e) => {
     e.stopPropagation(); // Prevent navigation on button click
@@ -25,7 +25,8 @@ const PropertyCard = ({ property }) => {
       className="bg-white rounded-sm overflow-hidden shadow-md cursor-pointer transition-all hover:shadow-lg border-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => navigate(`/property/${property.id}`)} // ✅ Navigate on click
+      onClick={() => navigate(`/property/${property._id}`)}
+
     >
       {/* Image Carousel */}
       <div className="relative w-full h-84 overflow-hidden rounded-t-xl rounded-b-xl">
