@@ -8,6 +8,9 @@ import {
 import { MdOutlineCabin, MdOutlineCastle, MdOutlineForest, MdOutlineMuseum } from "react-icons/md";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import FilterModal from "./FilterModal"; 
+import {BASE_URL} from "../config"
+
+
 
 // Categories List
 const categories = [

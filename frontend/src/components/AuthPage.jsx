@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {BASE_URL} from "../config"
 
 const AuthPage = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -12,7 +13,7 @@ const AuthPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = isSignup ? "http://localhost:8080/api/auth/signup" : "http://localhost:8080/api/auth/login";
+    const url = isSignup ? `${BASE_URL}/api/auth/signup` : `${BASE_URL}/api/auth/login`;
     
     try {
       const response = await fetch(url, {

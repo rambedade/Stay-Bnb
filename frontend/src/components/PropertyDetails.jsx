@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
+import {BASE_URL} from "../config"
+
 
 const PropertyDetails = () => {
   const { id } = useParams(); // Get property ID from URL
@@ -18,7 +20,7 @@ const PropertyDetails = () => {
       return;
     }
 
-    fetch(`http://localhost:8080/api/properties/${id}`)
+    fetch(`${BASE_URL}/api/properties/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProperty(data);

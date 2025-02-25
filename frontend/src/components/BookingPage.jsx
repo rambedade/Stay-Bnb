@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PaymentForm from "./PaymentForm"; // ✅ Import Payment Form
+import {BASE_URL} from "../config"
 
 const BookingPage = () => {
   const { id } = useParams(); // Get property ID from URL
@@ -14,7 +15,7 @@ const BookingPage = () => {
   const [showPaymentForm, setShowPaymentForm] = useState(false); // ✅ Toggle Payment Form
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/properties/${id}`)
+    fetch(`${BASE_URL}/api/properties/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProperty(data);

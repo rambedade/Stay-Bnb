@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PropertyCard from "./PropertyCard";
 import CategoryFilter from "./CategoryFilter"; // ✅ Import CategoryFilter
+import {BASE_URL} from "../config"
 
 
 const PropertyList = ({ selectedCategory }) => {
@@ -10,7 +11,7 @@ const PropertyList = ({ selectedCategory }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/properties")
+    fetch(`${BASE_URL}/api/properties`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`);

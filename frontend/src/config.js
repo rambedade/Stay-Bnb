@@ -1,0 +1,1 @@
+export const BASE_URL = "https://stay-bnb-wm93.onrender.com"

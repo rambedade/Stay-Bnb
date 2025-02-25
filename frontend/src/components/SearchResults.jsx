@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
+import {BASE_URL} from "../config"
 
 const SearchResults = () => {
   const location = useLocation();
@@ -7,10 +8,12 @@ const SearchResults = () => {
   const searchQuery = queryParams.get("query"); // ✅ Get search term from URL
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+
 
   useEffect(() => {
     if (!searchQuery) return;
-    fetch(`http://localhost:8080/api/properties/search?query=${searchQuery}`)
+    fetch(`${BASE_URL}/api/properties/search?query=${searchQuery}`)
       .then((res) => res.json())
       .then((data) => {
         setProperties(data);

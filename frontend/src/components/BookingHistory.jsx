@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import {BASE_URL} from "../config"
 
 const BookingHistory = () => {
   const [bookings, setBookings] = useState([]);
@@ -16,7 +17,7 @@ const BookingHistory = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:8080/api/bookings/user", {
+        const response = await fetch(`${BASE_URL}/api/bookings/user`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
