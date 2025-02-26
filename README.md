@@ -31,7 +31,8 @@
 ## 📸 Screenshots
 | Home Page | Property Details | Booking Page |
 |-----------|-----------------|--------------|
-| ![Home](https://via.placeholder.com/300) | ![Details](https://via.placeholder.com/300) | ![Booking](https://via.placeholder.com/300) |
+| ![image](https://github.com/user-attachments/assets/85c2ddc2-3eed-44b5-b23e-7275f5d49960)
+ | ![Details](https://via.placeholder.com/300) | ![Booking](https://via.placeholder.com/300) |
 
 ---
 
