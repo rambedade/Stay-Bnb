@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import {BASE_URL} from "../config"
+import { ClipLoader , BeatLoader} from "react-spinners";
 
 
 const PropertyDetails = () => {
-  const { id } = useParams(); // Get property ID from URL
-  const navigate = useNavigate(); // ✅ Hook for redirection
+  const { id } = useParams(); 
+  const navigate = useNavigate(); // 
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [checkIn, setCheckIn] = useState("");
@@ -14,7 +15,7 @@ const PropertyDetails = () => {
   const [guests, setGuests] = useState(1);
 
   useEffect(() => {
-    console.log("Property ID:", id); // ✅ Debugging Log
+    console.log("Property ID:", id); // 
     if (!id) {
       console.error("❌ No Property ID found!");
       return;
@@ -32,14 +33,14 @@ const PropertyDetails = () => {
       });
   }, [id]);
 
-  // ✅ Handle Reserve Button Click
+  // Handle Reserve Button Click
   const handleReserve = () => {
     const token = localStorage.getItem("token"); // Check if user is logged in
 
     if (!token) {
-      navigate("/auth"); // ✅ Redirect to AuthPage if not logged in
+      navigate("/auth"); // Redirect to AuthPage if not logged in
     } else {
-      navigate(`/booking/${id}`); // ✅ Redirect to Booking Page if logged in
+      navigate(`/booking/${id}`); // Redirect to Booking Page if logged in
     }
   };
 

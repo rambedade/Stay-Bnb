@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import PropertyCard from "./PropertyCard";
 import CategoryFilter from "./CategoryFilter"; // ✅ Import CategoryFilter
-import {BASE_URL} from "../config"
-
+import { BASE_URL } from "../config";
+import { ClipLoader , BeatLoader} from "react-spinners"; // ✅ Import ClipLoader spinner
 
 const PropertyList = ({ selectedCategory }) => {
   const [properties, setProperties] = useState([]);
@@ -43,8 +43,17 @@ const PropertyList = ({ selectedCategory }) => {
     setFilteredProperties(filtered);
   };
 
-  if (loading) return <p className="text-center text-xl mt-10">Loading properties...</p>;
-  if (error) return <p className="text-center text-red-500 text-xl mt-10">❌ Error: {error}</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <BeatLoader size={30} color={"#fc036b"} loading={loading} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500 text-xl mt-10">❌ Error: {error}</p>;
+  }
 
   return (
     <div>
