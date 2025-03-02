@@ -70,7 +70,7 @@ const handleLogout = () => {
           onClick={() => navigate("/")}
         >
           <img src={logo2} alt="StayBnb Logo" className="h-10" />
-          <h4 className="text-pink-500 text-2xl font-bold">StayBnb</h4>
+          <h4 className="text-rose-500 text-2xl font-bold">StayBnb</h4>
         </button>
 
         {/* ✅ Center - Search Bar (Mobile Below, Desktop Centered) */}
@@ -79,11 +79,11 @@ const handleLogout = () => {
             <input
               type="text"
               placeholder="Search destinations"
-              className="outline-none text-lg font-medium text-gray-500 bg-transparent w-full px-4"
+              className="outline-none text-lg font-normal text-gray-700 bg-transparent w-full px-4"
               value={searchQuery}
               onChange={handleSearchChange}
             />
-            <button className="bg-red-500 text-white p-3 rounded-full shadow-md">
+            <button className="bg-red-500 text-white p-3.5 rounded-full shadow-lg">
               <FaSearch />
             </button>
           </div>
