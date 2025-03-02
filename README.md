@@ -3,7 +3,7 @@
 🚀 A full-stack **MERN-based Airbnb Clone** where users can browse, book properties, and manage bookings with authentication.
 
 ## 🔗 Live Demo
-🎯 **Frontend**: [staybnb.vercel.app](https://staybnb.vercel.app)  
+🎯 **Frontend**: https://staybnb-omega.vercel.app/ 
 🎯 **Backend API**: [stay-bnb-wm93.onrender.com](https://stay-bnb-wm93.onrender.com)  
 
 ---
@@ -39,7 +39,7 @@
 ## 🏗 Installation & Setup
 ### 1️⃣ Clone the Repository
 ```sh
-git clone https://github.com/yourusername/staybnb.git
+git clone https://github.com/rambedade/Stay-Bnb
 cd staybnb
 ```
 
