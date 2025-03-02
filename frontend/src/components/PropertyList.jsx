@@ -142,6 +142,8 @@ const PropertyList = ({ searchQuery }) => { // ✅ Accept searchQuery as a prop
     return <p className="text-center text-red-500 text-xl mt-10">❌ Error: {error}</p>;
   }
 
+
+
   return (
     <div>
       {/* ✅ Pass Filter Functionality to CategoryFilter */}
