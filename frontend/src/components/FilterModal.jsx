@@ -1,34 +1,29 @@
 import { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
-import { FaTimes, FaStar, FaBed } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 import { Slider } from "@mui/material";
 import { BarChart, Bar, XAxis, ResponsiveContainer } from "recharts";
 
 const FilterModal = ({ isOpen, onClose, onApplyFilters, properties }) => {
-  const [priceRange, setPriceRange] = useState([20, 100]);
+  const [priceRange, setPriceRange] = useState([20, 200]);
   const [reviewScore, setReviewScore] = useState(4);
   const [beds, setBeds] = useState(1);
   const [bedrooms, setBedrooms] = useState(1);
   const [guestFavorite, setGuestFavorite] = useState(false);
   const [priceDistribution, setPriceDistribution] = useState([]);
 
-  // Generate price distribution histogram dynamically
+  // ✅ Generate price distribution histogram dynamically
   useEffect(() => {
     if (!properties || properties.length === 0) return;
 
     const priceBuckets = {};
-    const minPrice = 20;
-    const maxPrice = 100;
-    const bucketSize = 200; // Group prices in ranges of 2000
+    const bucketSize = 20; // Group prices in ranges of 20
 
     properties.forEach(({ price }) => {
-      if (price >= minPrice && price <= maxPrice) {
-        const bucket = Math.floor(price / bucketSize) * bucketSize;
-        priceBuckets[bucket] = (priceBuckets[bucket] || 0) + 1;
-      }
+      const bucket = Math.floor(price / bucketSize) * bucketSize;
+      priceBuckets[bucket] = (priceBuckets[bucket] || 0) + 1;
     });
 
-    // Convert object to sorted array for Recharts
     const histogramData = Object.entries(priceBuckets)
       .map(([price, count]) => ({ price: parseInt(price), count }))
       .sort((a, b) => a.price - b.price);
@@ -36,6 +31,7 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters, properties }) => {
     setPriceDistribution(histogramData);
   }, [properties]);
 
+  // ✅ Apply Filters & Close Modal
   const applyFilters = () => {
     onApplyFilters({
       priceRange,
@@ -61,12 +57,12 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters, properties }) => {
 
         <div className="px-6 py-4 space-y-6 max-h-[70vh] overflow-y-auto">
           
-          {/* Price Range */}
+          {/* ✅ Price Range */}
           <div>
             <h3 className="text-sm font-medium">Price range</h3>
             <p className="text-xs text-gray-500 mb-3">Nightly prices before fees and taxes</p>
 
-            {/* Dynamic Price Distribution Histogram */}
+            {/* ✅ Price Histogram */}
             <ResponsiveContainer width="100%" height={60}>
               <BarChart data={priceDistribution}>
                 <XAxis dataKey="price" hide />
@@ -74,12 +70,12 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters, properties }) => {
               </BarChart>
             </ResponsiveContainer>
 
-            {/* Price Range Slider */}
+            {/* ✅ Price Slider */}
             <Slider
               value={priceRange}
               onChange={(e, newValue) => setPriceRange(newValue)}
               min={20}
-              max={200}
+              max={500}
               valueLabelDisplay="auto"
               sx={{ color: "#ff385c" }}
             />
@@ -89,7 +85,7 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters, properties }) => {
             </div>
           </div>
 
-          {/* Rooms and Beds Section */}
+          {/* ✅ Bedrooms & Beds */}
           <div>
             <h3 className="text-sm font-medium mb-2">Rooms and beds</h3>
             
@@ -114,7 +110,7 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters, properties }) => {
             </div>
           </div>
 
-          {/* Guest Favorite */}
+          {/* ✅ Guest Favorite */}
           <div className="flex justify-between items-center">
             <span>Guest Favorite</span>
             <input
@@ -126,11 +122,11 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters, properties }) => {
           </div>
         </div>
 
-        {/* Modal Footer */}
+        {/* ✅ Modal Footer */}
         <div className="flex justify-between items-center border-t px-6 py-4">
           <button onClick={onClose} className="text-gray-600 hover:text-black text-sm font-medium">Clear all</button>
           <button onClick={applyFilters} className="bg-black text-white px-6 py-3 rounded-full text-sm font-medium">
-            Show 1,000+ places
+            Show Properties
           </button>
         </div>
 

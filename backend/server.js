@@ -36,6 +36,28 @@ app.get("/api/properties", async (req, res) => {
   }
 });
 
+
+
+app.get("/api/properties/search", async (req, res) => {
+  try {
+    const { query } = req.query; // Get search term from URL params
+    if (!query) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    const properties = await Property.find({
+      $or: [
+        { name: { $regex: query, $options: "i" } }, // Case-insensitive name match
+        { smart_location: { $regex: query, $options: "i" } } // Location match
+      ],
+    });
+
+    res.json(properties);
+  } catch (error) {
+    res.status(500).json({ message: "Error searching properties", error: error.message });
+  }
+});
+
 // ✅ Fetch Single Property by ID
 app.get("/api/properties/:id", async (req, res) => {
   try {
@@ -47,7 +69,7 @@ app.get("/api/properties/:id", async (req, res) => {
   }
 });
 
-// ✅ USER SIGNUP (Fixed)
+// ✅ USER SIGNUP 
 app.post("/api/auth/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -56,7 +78,7 @@ app.post("/api/auth/signup", async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "User already exists" });
 
-    // ✅ FIX: Generate salt first
+    //   Generate salt first
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -152,25 +174,7 @@ app.get("/api/bookings/user", async (req, res) => {
 });
 
 // Search properties by name or location
-app.get("/api/properties/search", async (req, res) => {
-  try {
-    const { query } = req.query; // Get search term from URL params
-    if (!query) {
-      return res.status(400).json({ message: "Search query is required" });
-    }
 
-    const properties = await Property.find({
-      $or: [
-        { name: { $regex: query, $options: "i" } }, // Case-insensitive name match
-        { smart_location: { $regex: query, $options: "i" } } // Location match
-      ],
-    });
-
-    res.json(properties);
-  } catch (error) {
-    res.status(500).json({ message: "Error searching properties", error: error.message });
-  }
-});
 
 
 

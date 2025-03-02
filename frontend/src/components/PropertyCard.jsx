@@ -6,6 +6,7 @@ const PropertyCard = ({ property }) => {
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false); // ✅ Lazy Loading State
   const navigate = useNavigate(); //  Hook for navigation
 
   const nextImage = (e) => {
@@ -26,14 +27,20 @@ const PropertyCard = ({ property }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => navigate(`/property/${property._id}`)}
-
     >
       {/* Image Carousel */}
       <div className="relative w-full h-84 overflow-hidden rounded-t-xl rounded-b-xl">
+        {/* ✅ Lazy Loading Placeholder */}
+        {!imageLoaded && <div className="bg-gray-300 w-full h-full animate-pulse"></div>}
+
         <img
           src={property.images[currentImage]}
           alt={property.name}
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover transition-opacity duration-500 ${
+            imageLoaded ? "opacity-100" : "opacity-0"
+          }`}
+          loading="lazy"
+          onLoad={() => setImageLoaded(true)}
         />
 
         {/* Left & Right Carousel Arrows - Visible Only on Hover */}

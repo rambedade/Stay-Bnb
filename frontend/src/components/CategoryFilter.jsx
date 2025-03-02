@@ -1,109 +1,129 @@
-import { useState, useRef } from "react";
-import { 
-  FaSwimmingPool, FaStar, FaUmbrellaBeach, FaMountain, FaHome, FaTree, 
-  FaWarehouse, FaCity, FaDoorOpen, FaFilter, FaCampground, FaSnowflake, 
-  FaGlobeAmericas, FaHotel, FaBicycle, FaShip, FaBuilding, FaFish, 
-  FaGopuram, FaMosque, FaChurch, FaLandmark, FaHiking, FaBeer, FaLeaf
-} from "react-icons/fa";
-import { MdOutlineCabin, MdOutlineCastle, MdOutlineForest, MdOutlineMuseum } from "react-icons/md";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import FilterModal from "./FilterModal"; 
-import {BASE_URL} from "../config"
-
-
-
-// Categories List
-const categories = [
-  { name: "Amazing pools", icon: <FaSwimmingPool /> },
-  { name: "Beachfront", icon: <FaUmbrellaBeach /> },
-  { name: "Mountains", icon: <FaMountain /> },
-  { name: "Houseboats", icon: <FaHome /> },
-  { name: "Windmills", icon: <FaTree /> },
-  { name: "Mansions", icon: <FaWarehouse /> },
-  { name: "Luxe", icon: <FaCity /> },
-  { name: "Cabins", icon: <MdOutlineCabin /> },
-  { name: "Rooms", icon: <FaDoorOpen /> },
-  { name: "Camping", icon: <FaCampground /> },
-  { name: "Winter Resorts", icon: <FaSnowflake /> },
-  { name: "Countryside", icon: <FaGlobeAmericas /> },
-  { name: "Boutique Hotels", icon: <FaHotel /> },
-  { name: "Cycling Retreats", icon: <FaBicycle /> },
-  { name: "Castles", icon: <MdOutlineCastle /> },
-  { name: "Forest Cabins", icon: <MdOutlineForest /> },
-  { name: "Floating Homes", icon: <FaShip /> },
-  { name: "Skyline Views", icon: <FaBuilding /> },
-  { name: "Fishing Spots", icon: <FaFish /> },
-  { name: "Cultural Stays", icon: <FaGopuram /> },
-  { name: "Mosques & Minarets", icon: <FaMosque /> },
-  { name: "Church Retreats", icon: <FaChurch /> },
-  { name: "Landmark Homes", icon: <FaLandmark /> },
-  { name: "Hiking Spots", icon: <FaHiking /> },
-  { name: "Wineries & Vineyards", icon: <FaBeer /> },
-  { name: "Eco-Friendly Stays", icon: <FaLeaf /> },
-  { name: "Museums & Heritage", icon: <MdOutlineMuseum /> },
-];
+import { useState, useEffect, useRef } from "react";
+import { FaFilter } from "react-icons/fa";
 
 const CategoryFilter = ({ onApplyFilters }) => {
-  const [selectedCategory, setSelectedCategory] = useState("Amazing pools");
-  const [isModalOpen, setIsModalOpen] = useState(false); // ✅ State for Filter Modal
-  const scrollRef = useRef(null);
+  const [filters, setFilters] = useState({
+    priceRange: [20, 100],
+    reviewScore: 0,
+    beds: 0,
+    bedrooms: 0,
+    guestFavorite: false,
+    category: "",
+  });
 
-  // Scroll Functions
-  const scrollLeft = () => scrollRef.current.scrollBy({ left: -200, behavior: "smooth" });
-  const scrollRight = () => scrollRef.current.scrollBy({ left: 200, behavior: "smooth" });
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null); // ✅ Reference for detecting outside clicks
+
+  // ✅ Handle Click Outside to Close Dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isDropdownOpen]);
+
+  // ✅ Handle Filter Updates
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  // ✅ Apply Filters
+  const applyFilters = () => {
+    console.log("✅ Applied Filters:", filters);
+    onApplyFilters(filters);
+    setIsDropdownOpen(false); // ✅ Close dropdown after applying filters
+  };
 
   return (
-    <div className="relative flex items-center justify-between border-none pb-2 px-6 pt-8 ml-0">
-      {/* Left Arrow for Category Scroll */}
+    <div className="relative flex justify-end p-4">
+      {/* ✅ Filter Button (Always Visible) */}
       <button
-        className="absolute left-0 z-10 ml-5 mt-0 mb-5 bg-white p-2 rounded-full shadow-md hidden md:flex"
-        onClick={scrollLeft}
+        className="flex items-center border px-4 py-2 rounded-lg text-md shadow-md hover:shadow-lg relative z-20 bg-white"
+        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
-        <FaChevronLeft className="text-gray-600" />
+        <FaFilter className="mr-2" /> Filters
       </button>
 
-      {/* Category List */}
-      <div ref={scrollRef} className="flex space-x-6 overflow-x-auto scrollbar-hide px-10 flex-1 w-20">
-        {categories.map((category) => (
-          <div
-            key={category.name}
-            className={`flex flex-col items-center cursor-pointer transition-all ${
-              selectedCategory === category.name ? "text-black font-semibold" : "text-gray-500"
-            }`}
-            onClick={() => setSelectedCategory(category.name)}
-          >
-            <div className={`text-2xl ${selectedCategory === category.name ? "text-black" : "text-gray-400"}`}>
-              {category.icon}
-            </div>
-            <span className="text-sm">{category.name}</span>
-            {selectedCategory === category.name && <div className="w-6 h-1 bg-black mt-1 rounded-full"></div>}
+      {/* ✅ Dropdown Filter Menu (Closes When Clicking Outside) */}
+      {isDropdownOpen && (
+        <div
+          ref={dropdownRef}
+          className="absolute right-0 mt-2 w-64 bg-white shadow-md rounded-lg p-4 z-10 border"
+        >
+          {/* ✅ Price Range */}
+          <label className="block text-sm font-medium">Price Range</label>
+          <div className="flex justify-between text-sm font-semibold mt-1">
+            <span>${filters.priceRange[0]}</span>
+            <span>${filters.priceRange[1]}</span>
           </div>
-        ))}
-      </div>
+          <input
+            type="range"
+            min="20"
+            max="500"
+            value={filters.priceRange[0]}
+            onChange={(e) => handleFilterChange("priceRange", [parseInt(e.target.value), filters.priceRange[1]])}
+            className="w-full"
+          />
+          <input
+            type="range"
+            min="20"
+            max="500"
+            value={filters.priceRange[1]}
+            onChange={(e) => handleFilterChange("priceRange", [filters.priceRange[0], parseInt(e.target.value)])}
+            className="w-full"
+          />
 
-      {/* Right Arrow (before Filter Button) */}
-      <button
-        className="absolute right-[4.5rem] z-10 bg-white p-2 mr-12 rounded-full shadow-md hidden md:flex"
-        onClick={scrollRight}
-      >
-        <FaChevronRight className="text-gray-600" />
-      </button>
+          {/* ✅ Review Score */}
+          <label className="block text-sm font-medium mt-2">Minimum Rating</label>
+          <select
+            className="w-full border p-2 rounded-md"
+            value={filters.reviewScore}
+            onChange={(e) => handleFilterChange("reviewScore", parseFloat(e.target.value))}
+          >
+            <option value="0">Any</option>
+            <option value="3">3+ Stars</option>
+            <option value="4">4+ Stars</option>
+            <option value="5">5 Stars</option>
+          </select>
 
-      {/* Filter Button - Opens Modal */}
-      <button
-        className="ml-auto mt-1 mb-3 flex cursor-pointer font-semibold items-center border px-4 py-2 w-23 h-14 rounded-lg text-md shadow-md hover:shadow-lg"
-        onClick={() => setIsModalOpen(true)} // ✅ Open Modal on Click
-      >
-        <FaFilter className="mr-1" /> Filters
-      </button>
+          {/* ✅ Bedrooms & Beds */}
+          <label className="block text-sm font-medium mt-2">Bedrooms</label>
+          <input
+            type="number"
+            className="w-full border p-2 rounded-md"
+            value={filters.bedrooms}
+            onChange={(e) => handleFilterChange("bedrooms", parseInt(e.target.value))}
+            min="0"
+          />
 
-      {/* Filter Modal - Renders when `isModalOpen` is `true` */}
-      {isModalOpen && (
-        <FilterModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onApplyFilters={onApplyFilters} // ✅ Pass filter function
-        />
+          {/* ✅ Guest Favorite Checkbox */}
+          <label className="flex items-center mt-2">
+            <input
+              type="checkbox"
+              checked={filters.guestFavorite}
+              onChange={() => handleFilterChange("guestFavorite", !filters.guestFavorite)}
+              className="mr-2"
+            />
+            Guest Favorite
+          </label>
+
+          {/* ✅ Apply Filter Button */}
+          <button
+            className="w-full bg-red-500 text-white py-2 mt-4 rounded-lg"
+            onClick={applyFilters}
+          >
+            Apply Filters
+          </button>
+        </div>
       )}
     </div>
   );

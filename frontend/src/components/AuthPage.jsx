@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {BASE_URL} from "../config"
+import { BASE_URL } from "../config";
 
 const AuthPage = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -14,7 +14,7 @@ const AuthPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = isSignup ? `${BASE_URL}/api/auth/signup` : `${BASE_URL}/api/auth/login`;
-    
+
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -35,10 +35,12 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-        <h2 className="text-2xl font-bold text-center mb-4">{isSignup ? "Signup" : "Login"}</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md transform transition-all duration-500">
+        <h2 className="text-3xl font-extrabold text-center mb-6 text-gray-800">
+          {isSignup ? "Create an Account" : "Welcome Back"}
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-5">
           {isSignup && (
             <input
               type="text"
@@ -47,7 +49,7 @@ const AuthPage = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full p-2 border rounded"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           )}
           <input
@@ -57,7 +59,7 @@ const AuthPage = () => {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
           <input
             type="password"
@@ -66,15 +68,21 @@ const AuthPage = () => {
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full p-2 border rounded"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
-          <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white p-3 rounded-lg font-semibold shadow-md hover:from-blue-600 hover:to-blue-700 transition-all"
+          >
             {isSignup ? "Signup" : "Login"}
           </button>
         </form>
-        <p className="text-center mt-4">
+        <p className="text-center mt-5 text-gray-700">
           {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
-          <span className="text-blue-500 cursor-pointer" onClick={() => setIsSignup(!isSignup)}>
+          <span
+            className="text-blue-600 font-medium cursor-pointer hover:underline"
+            onClick={() => setIsSignup(!isSignup)}
+          >
             {isSignup ? "Login" : "Signup"}
           </span>
         </p>
