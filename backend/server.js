@@ -139,11 +139,13 @@ const verifyToken = (req, res, next) => {
 app.post("/api/bookings", verifyToken, async (req, res) => {
   try {
     const { propertyId, checkIn, checkOut, guests } = req.body;
-    const userId = req.user.id; // ✅ Get user ID from token
+    const userId = req.user.id; // ✅ Get user ID from the JWT token
+
+    console.log("📢 Creating booking for user:", userId); // ✅ Debugging log
 
     // Create new booking
     const booking = new Booking({
-      userId,
+      userId, // ✅ This should be the logged-in user's ID
       propertyId,
       checkIn,
       checkOut,
@@ -151,11 +153,14 @@ app.post("/api/bookings", verifyToken, async (req, res) => {
     });
 
     await booking.save();
+    console.log("✅ Booking saved with userId:", userId);
+    
     res.status(201).json({ message: "Booking confirmed!", booking });
   } catch (error) {
     res.status(500).json({ message: "Error saving booking", error: error.message });
   }
 });
+
 
 // ✅ Get User's Booking History (Protected Route)
 app.get("/api/bookings/user", verifyToken, async (req, res) => {
