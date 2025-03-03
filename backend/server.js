@@ -166,15 +166,25 @@ app.post("/api/bookings", verifyToken, async (req, res) => {
 
 app.get("/api/bookings/user", verifyToken, async (req, res) => {
   try {
-    const userId = req.user.id;
-    console.log("📢 Fetching bookings for user:", userId); // ✅ Debugging log
+    let userId = req.user.id;
+    console.log("📢 Fetching bookings for user:", userId);
 
-    // ✅ Convert userId to ObjectId using the correct method
-    const bookings = await Booking.find({ userId: new mongoose.Types.ObjectId.createFromHexString(userId) })
+    // ✅ Ensure userId is valid before converting
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.log("❌ Invalid userId format:", userId);
+      return res.status(400).json({ message: "Invalid user ID format" });
+    }
+
+    userId = new mongoose.Types.ObjectId(userId); // ✅ Correct conversion to ObjectId
+
+    console.log("🔍 Querying MongoDB for bookings...");
+    const bookings = await Booking.find({ userId })
       .populate({
         path: "propertyId",
         select: "name smart_location",
       });
+
+    console.log("🔍 Query Result:", bookings);
 
     if (!bookings || bookings.length === 0) {
       console.log("🚨 No bookings found for user:", userId);
@@ -184,10 +194,11 @@ app.get("/api/bookings/user", verifyToken, async (req, res) => {
     console.log("✅ Found bookings for user:", userId, bookings);
     res.json({ message: "Bookings retrieved successfully", bookings });
   } catch (error) {
-    console.error("❌ Error fetching bookings:", error);
+    console.error("❌ Error fetching bookings:", error.stack);
     res.status(500).json({ message: "Error fetching bookings", error: error.message });
   }
 });
+
 
 
 
