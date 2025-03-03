@@ -177,6 +177,32 @@ app.post("/api/bookings", verifyToken, async (req, res) => {
   }
 });
 
+app.patch("/api/bookings/:id/confirm", verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id; // ✅ Get user ID from token
+
+    console.log("📢 Confirming booking:", id, "for user:", userId);
+
+    // ✅ Find the booking and ensure it belongs to the logged-in user
+    const booking = await Booking.findOne({ _id: id, userId });
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found." });
+    }
+
+    // ✅ Update booking status to "Confirmed"
+    booking.status = "Confirmed";
+    await booking.save();
+
+    console.log("✅ Booking confirmed:", booking._id);
+    res.json({ message: "Booking confirmed!", booking });
+  } catch (error) {
+    console.error("❌ Error confirming booking:", error);
+    res.status(500).json({ message: "Error confirming booking", error: error.message });
+  }
+});
+
+
 
 // ✅ Start Server
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

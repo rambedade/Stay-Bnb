@@ -36,25 +36,50 @@ const PaymentForm = ({ bookingDetails }) => {
     return newErrors;
   };
 
-  const handlePayment = (e) => {
+  const handlePayment = async (e) => {
     e.preventDefault();
     setErrors({});
     const newErrors = validateForm();
-
+  
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-
+  
     setLoading(true);
-    setTimeout(() => {
+    try {
+      // ✅ Simulate a 2-second payment processing delay
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+  
+      // ✅ Send request to confirm booking in backend
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${BASE_URL}/api/bookings/${bookingDetails.bookingId}/confirm`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const data = await response.json();
+      console.log("✅ Booking Confirmation API Response:", data);
+  
+      if (response.ok) {
+        setSuccessMessage("✅ Payment Successful! Booking Confirmed.");
+        setTimeout(() => {
+          navigate("/booking-history");
+        }, 3000);
+      } else {
+        setErrors({ payment: "❌ Payment was successful, but booking confirmation failed." });
+      }
+    } catch (error) {
+      console.error("❌ Error confirming booking:", error);
+      setErrors({ payment: "❌ Something went wrong. Try again." });
+    } finally {
       setLoading(false);
-      setSuccessMessage("✅ Payment Successful! Redirecting to your bookings...");
-      setTimeout(() => {
-        navigate("/booking-history");
-      }, 3000);
-    }, 2000);
+    }
   };
+  
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-xl mt-10 border border-gray-300">
