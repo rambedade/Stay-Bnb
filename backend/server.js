@@ -132,5 +132,52 @@ const verifyToken = (req, res, next) => {
   }
 };
 
+const Booking = require("./models/Booking"); // ✅ Import Booking Model
+
+// ✅ Create Booking Route
+app.post("/api/bookings", verifyToken, async (req, res) => {
+  try {
+    const { propertyId, checkIn, checkOut, guests } = req.body;
+    const userId = req.user.id; // ✅ Get user ID from token
+
+    console.log("📢 Creating booking for user:", userId); // ✅ Debugging log
+
+    // ✅ Ensure check-in date is before check-out
+    if (new Date(checkIn) >= new Date(checkOut)) {
+      return res.status(400).json({ message: "Check-in date must be before check-out date." });
+    }
+
+    // ✅ Prevent overlapping bookings
+    const overlappingBooking = await Booking.findOne({
+      propertyId,
+      $or: [
+        { checkIn: { $lt: checkOut }, checkOut: { $gt: checkIn } } // ✅ Check for overlap
+      ],
+    });
+
+    if (overlappingBooking) {
+      return res.status(400).json({ message: "This property is already booked for the selected dates." });
+    }
+
+    // ✅ Create new booking
+    const booking = new Booking({
+      userId,
+      propertyId,
+      checkIn,
+      checkOut,
+      guests,
+    });
+
+    await booking.save();
+    console.log("✅ Booking saved with ID:", booking._id);
+
+    res.status(201).json({ message: "Booking confirmed!", booking });
+  } catch (error) {
+    console.error("❌ Error saving booking:", error);
+    res.status(500).json({ message: "Error saving booking", error: error.message });
+  }
+});
+
+
 // ✅ Start Server
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
