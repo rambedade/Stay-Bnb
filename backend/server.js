@@ -228,6 +228,34 @@ app.get("/api/bookings/user", verifyToken, async (req, res) => {
   }
 });
 
+app.delete("/api/bookings/:id/cancel", verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id; // ✅ Get user ID from token
+
+    console.log("📢 Cancelling booking:", id, "for user:", userId);
+
+    // ✅ Find the booking and ensure it belongs to the logged-in user
+    const booking = await Booking.findOne({ _id: id, userId });
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found." });
+    }
+
+    // ✅ Ensure cancellation is allowed only before check-in
+    if (new Date(booking.checkIn) <= new Date()) {
+      return res.status(400).json({ message: "You cannot cancel a booking after check-in date." });
+    }
+
+    // ✅ Delete the booking
+    await Booking.findByIdAndDelete(id);
+
+    console.log("✅ Booking cancelled:", id);
+    res.json({ message: "Booking successfully cancelled." });
+  } catch (error) {
+    console.error("❌ Error cancelling booking:", error);
+    res.status(500).json({ message: "Error cancelling booking", error: error.message });
+  }
+});
 
 
 // ✅ Start Server
