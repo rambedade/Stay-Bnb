@@ -163,7 +163,6 @@ app.post("/api/bookings", verifyToken, async (req, res) => {
 
 
 // ✅ Get User's Booking History (Protected Route)
-const mongoose = require("mongoose");
 
 app.get("/api/bookings/user", verifyToken, async (req, res) => {
   try {
