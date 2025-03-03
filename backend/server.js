@@ -158,20 +158,22 @@ app.post("/api/bookings", verifyToken, async (req, res) => {
 });
 
 // ✅ Get User's Booking History (Protected Route)
-app.get("/api/bookings/user", async (req, res) => {
+app.get("/api/bookings/user", verifyToken, async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1]; // Extract token
-    if (!token) return res.status(401).json({ message: "Unauthorized. No token provided." });
+    const userId = req.user.id; // ✅ Get user ID from the token
 
-    const decoded = jwt.verify(token, SECRET_KEY); // Verify token
-    const userId = decoded.id; // Get user ID from token
+    // ✅ Ensure propertyId is populated correctly
+    const bookings = await Booking.find({ userId }).populate({
+      path: "propertyId",
+      select: "name smart_location", // Only get required fields
+    });
 
-    const bookings = await Booking.find({ userId }).populate("propertyId"); // Get user bookings
-    res.json(bookings);
+    res.json({ message: "Bookings retrieved successfully", bookings });
   } catch (error) {
     res.status(500).json({ message: "Error fetching bookings", error: error.message });
   }
 });
+
 
 // Search properties by name or location
 

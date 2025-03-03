@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {BASE_URL} from "../config"
+import { BASE_URL } from "../config";
 
 const BookingHistory = () => {
   const [bookings, setBookings] = useState([]);
@@ -8,7 +8,7 @@ const BookingHistory = () => {
 
   useEffect(() => {
     const fetchBookings = async () => {
-      const token = localStorage.getItem("token"); // Get JWT token
+      const token = localStorage.getItem("token");
 
       if (!token) {
         setError("Unauthorized. Please log in.");
@@ -25,7 +25,7 @@ const BookingHistory = () => {
 
         const data = await response.json();
         if (response.ok) {
-          setBookings(data);
+          setBookings(data.bookings); // ✅ Fix: Extract 'bookings' array from response
         } else {
           setError(data.message || "Failed to fetch bookings.");
         }
@@ -50,10 +50,10 @@ const BookingHistory = () => {
       ) : (
         bookings.map((booking) => (
           <div key={booking._id} className="bg-white shadow-md p-6 rounded-lg mb-4">
-            <h2 className="text-xl font-semibold">{booking.propertyId.name}</h2>
-            <p className="text-gray-600">{booking.propertyId.smart_location}</p>
-            <p className="text-gray-600">Check-in: {booking.checkIn}</p>
-            <p className="text-gray-600">Check-out: {booking.checkOut}</p>
+            <h2 className="text-xl font-semibold">{booking.propertyId?.name || "Unknown Property"}</h2>
+            <p className="text-gray-600">{booking.propertyId?.smart_location || "Unknown Location"}</p>
+            <p className="text-gray-600">Check-in: {new Date(booking.checkIn).toLocaleDateString()}</p>
+            <p className="text-gray-600">Check-out: {new Date(booking.checkOut).toLocaleDateString()}</p>
             <p className="text-gray-600 font-semibold">
               Status: <span className="text-green-500">Confirmed</span>
             </p>
