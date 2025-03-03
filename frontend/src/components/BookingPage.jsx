@@ -12,7 +12,8 @@ const BookingPage = () => {
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
   const [error, setError] = useState("");
-  const [showPaymentForm, setShowPaymentForm] = useState(false); // ✅ Toggle Payment Form
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [bookingId, setBookingId] = useState(null); // ✅ Store booking ID
 
   useEffect(() => {
     fetch(`${BASE_URL}/api/properties/${id}`)
@@ -22,20 +23,52 @@ const BookingPage = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching property details:", err);
+        console.error("❌ Error fetching property details:", err);
         setLoading(false);
       });
   }, [id]);
 
-  // ✅ Handle Confirm Booking Button (Show Payment Form)
-  const handleConfirmBooking = () => {
+  // ✅ Handle Confirm Booking Button (Send Booking to Backend First)
+  const handleConfirmBooking = async () => {
     if (!checkIn || !checkOut) {
       setError("⚠️ Please select check-in and check-out dates.");
       return;
     }
 
-    setError(""); 
-    setShowPaymentForm(true); // ✅ Show Payment Form
+    const token = localStorage.getItem("token"); // ✅ Get JWT token from localStorage
+    if (!token) {
+      setError("⚠️ You must be logged in to book.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/bookings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ Send user token for authentication
+        },
+        body: JSON.stringify({
+          propertyId: id,
+          checkIn,
+          checkOut,
+          guests,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("✅ Booking API Response:", data);
+
+      if (response.ok) {
+        setBookingId(data.booking._id); // ✅ Store booking ID from response
+        setShowPaymentForm(true); // ✅ Show Payment Form
+      } else {
+        setError(data.message || "❌ Booking failed. Try again.");
+      }
+    } catch (err) {
+      console.error("❌ Error confirming booking:", err);
+      setError("❌ Something went wrong. Try again.");
+    }
   };
 
   if (loading)
@@ -97,7 +130,7 @@ const BookingPage = () => {
           </button>
         </div>
       ) : (
-        <PaymentForm bookingDetails={{ propertyId: id, checkIn, checkOut, guests }} />
+        <PaymentForm bookingDetails={{ bookingId, propertyId: id, checkIn, checkOut, guests }} />
       )}
     </div>
   );
