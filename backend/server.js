@@ -160,19 +160,27 @@ app.post("/api/bookings", verifyToken, async (req, res) => {
 // ✅ Get User's Booking History (Protected Route)
 app.get("/api/bookings/user", verifyToken, async (req, res) => {
   try {
-    const userId = req.user.id; // ✅ Get user ID from the token
+    const userId = req.user.id;
+    console.log("📢 Fetching bookings for user:", userId); // ✅ Debugging log
 
-    // ✅ Ensure propertyId is populated correctly
     const bookings = await Booking.find({ userId }).populate({
       path: "propertyId",
-      select: "name smart_location", // Only get required fields
+      select: "name smart_location",
     });
 
+    if (!bookings || bookings.length === 0) {
+      console.log("🚨 No bookings found for user:", userId);
+      return res.json({ message: "No bookings found", bookings: [] });
+    }
+
+    console.log("✅ Found bookings for user:", userId, bookings);
     res.json({ message: "Bookings retrieved successfully", bookings });
   } catch (error) {
+    console.error("❌ Error fetching bookings:", error);
     res.status(500).json({ message: "Error fetching bookings", error: error.message });
   }
 });
+
 
 
 // Start Server

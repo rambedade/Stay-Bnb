@@ -9,13 +9,14 @@ const BookingHistory = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       const token = localStorage.getItem("token");
-
+      console.log("🔍 Token being sent:", token); // ✅ Debugging log
+    
       if (!token) {
         setError("Unauthorized. Please log in.");
         setLoading(false);
         return;
       }
-
+    
       try {
         const response = await fetch(`${BASE_URL}/api/bookings/user`, {
           method: "GET",
@@ -23,12 +24,12 @@ const BookingHistory = () => {
             "Authorization": `Bearer ${token}`,
           },
         });
-
+    
         const data = await response.json();
         console.log("🔍 API Response:", data); // ✅ Debugging log
-
+    
         if (response.ok) {
-          setBookings(Array.isArray(data.bookings) ? data.bookings : []); // ✅ Fix: Ensure it's always an array
+          setBookings(Array.isArray(data.bookings) ? data.bookings : []); // ✅ Ensure it's always an array
         } else {
           setError(data.message || "Failed to fetch bookings.");
         }
@@ -39,7 +40,7 @@ const BookingHistory = () => {
         setLoading(false);
       }
     };
-
+    
     fetchBookings();
   }, []);
 
