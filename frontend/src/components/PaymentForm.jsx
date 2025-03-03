@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaCreditCard } from "react-icons/fa";
+import { BASE_URL } from "../config";
 
 const PaymentForm = ({ bookingDetails }) => {
   const navigate = useNavigate();

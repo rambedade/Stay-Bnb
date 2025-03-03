@@ -137,20 +137,18 @@ const verifyToken = (req, res, next) => {
 app.post("/api/bookings", verifyToken, async (req, res) => {
   try {
     const { propertyId, checkIn, checkOut, guests } = req.body;
-    const userId = req.user.id; // ✅ Get user ID from token
+    const userId = req.user.id;
 
-    console.log("📢 Creating booking for user:", userId); // ✅ Debugging log
+    console.log("📢 Creating booking for user:", userId);
 
-    // ✅ Ensure check-in date is before check-out
     if (new Date(checkIn) >= new Date(checkOut)) {
       return res.status(400).json({ message: "Check-in date must be before check-out date." });
     }
 
-    // ✅ Prevent overlapping bookings
     const overlappingBooking = await Booking.findOne({
       propertyId,
       $or: [
-        { checkIn: { $lt: checkOut }, checkOut: { $gt: checkIn } } // ✅ Check for overlap
+        { checkIn: { $lt: checkOut }, checkOut: { $gt: checkIn } }
       ],
     });
 
@@ -158,39 +156,39 @@ app.post("/api/bookings", verifyToken, async (req, res) => {
       return res.status(400).json({ message: "This property is already booked for the selected dates." });
     }
 
-    // ✅ Create new booking
+    // ✅ Create new booking WITH status set to "Pending"
     const booking = new Booking({
       userId,
       propertyId,
       checkIn,
       checkOut,
       guests,
+      status: "Pending",
     });
 
     await booking.save();
     console.log("✅ Booking saved with ID:", booking._id);
 
-    res.status(201).json({ message: "Booking confirmed!", booking });
+    res.status(201).json({ message: "Booking created!", booking });
   } catch (error) {
     console.error("❌ Error saving booking:", error);
     res.status(500).json({ message: "Error saving booking", error: error.message });
   }
 });
 
+// ✅ Confirm Booking After Payment
 app.patch("/api/bookings/:id/confirm", verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id; // ✅ Get user ID from token
+    const userId = req.user.id;
 
     console.log("📢 Confirming booking:", id, "for user:", userId);
 
-    // ✅ Find the booking and ensure it belongs to the logged-in user
     const booking = await Booking.findOne({ _id: id, userId });
     if (!booking) {
       return res.status(404).json({ message: "Booking not found." });
     }
 
-    // ✅ Update booking status to "Confirmed"
     booking.status = "Confirmed";
     await booking.save();
 
@@ -199,6 +197,34 @@ app.patch("/api/bookings/:id/confirm", verifyToken, async (req, res) => {
   } catch (error) {
     console.error("❌ Error confirming booking:", error);
     res.status(500).json({ message: "Error confirming booking", error: error.message });
+  }
+});
+
+// ✅ Get Only Confirmed Bookings for User
+app.get("/api/bookings/user", verifyToken, async (req, res) => {
+  try {
+    let userId = req.user.id;
+    console.log("📢 Fetching confirmed bookings for user:", userId);
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID format" });
+    }
+
+    const bookings = await Booking.find({ userId, status: "Confirmed" })
+      .populate({
+        path: "propertyId",
+        select: "name smart_location",
+      });
+
+    if (!bookings || bookings.length === 0) {
+      return res.json({ message: "No confirmed bookings found", bookings: [] });
+    }
+
+    console.log("✅ Found confirmed bookings for user:", userId, bookings);
+    res.json({ message: "Confirmed bookings retrieved successfully", bookings });
+  } catch (error) {
+    console.error("❌ Error fetching confirmed bookings:", error);
+    res.status(500).json({ message: "Error fetching bookings", error: error.message });
   }
 });
 
