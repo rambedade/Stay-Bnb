@@ -25,7 +25,13 @@ const AuthPage = () => {
       const data = await response.json();
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        navigate("/"); // ✅ Redirect to Home after Login/Signup
+        localStorage.setItem("userId", data.userId);
+
+        navigate("/"); // ✅ Redirect to Home
+
+        setTimeout(() => {
+          window.location.reload(); // ✅ Refresh the page after login/signup
+        }, 100);
       } else {
         alert(data.message);
       }

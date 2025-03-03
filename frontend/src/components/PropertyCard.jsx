@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaHeart, FaStar, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
@@ -7,7 +7,31 @@ const PropertyCard = ({ property }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false); // ✅ Lazy Loading State
-  const navigate = useNavigate(); //  Hook for navigation
+  const navigate = useNavigate(); // Hook for navigation
+
+  // ✅ Load Wishlist from LocalStorage on Mount
+  useEffect(() => {
+    const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    setIsFavorite(wishlist.some((item) => item._id === property._id));
+  }, [property._id]);
+
+  // ✅ Toggle Wishlist Function
+  const handleToggleWishlist = (e) => {
+    e.stopPropagation(); // ✅ Prevent navigation when clicking the heart
+
+    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+    if (isFavorite) {
+      // ✅ Remove from wishlist
+      wishlist = wishlist.filter((item) => item._id !== property._id);
+    } else {
+      // ✅ Add to wishlist
+      wishlist.push(property);
+    }
+
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    setIsFavorite(!isFavorite);
+  };
 
   const nextImage = (e) => {
     e.stopPropagation(); // Prevent navigation on button click
@@ -16,9 +40,7 @@ const PropertyCard = ({ property }) => {
 
   const prevImage = (e) => {
     e.stopPropagation(); // Prevent navigation on button click
-    setCurrentImage(
-      (prev) => (prev - 1 + property.images.length) % property.images.length
-    );
+    setCurrentImage((prev) => (prev - 1 + property.images.length) % property.images.length);
   };
 
   return (
@@ -83,15 +105,10 @@ const PropertyCard = ({ property }) => {
         {/* Favorite (Heart) Icon */}
         <div
           className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation(); // ✅ Prevent navigation when clicking the heart
-            setIsFavorite(!isFavorite);
-          }}
+          onClick={handleToggleWishlist}
         >
           <FaHeart
-            className={`text-lg ${
-              isFavorite ? "text-red-500" : "text-gray-700"
-            } transition-colors duration-300`}
+            className={`text-lg ${isFavorite ? "text-red-500" : "text-gray-700"} transition-colors duration-300`}
           />
         </div>
       </div>

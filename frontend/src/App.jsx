@@ -13,6 +13,7 @@ import SearchResults from "./components/SearchResults";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
 import NotFound from "./components/NotFound"; // ✅ Import NotFound component
+import WishlistPage from "./components/WishlistPage"; // ✅ Import WishlistPage
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -46,6 +47,7 @@ function App() {
                 <Route path="/booking/:id" element={<BookingPage />} />
                 <Route path="/booking-history" element={<BookingHistory />} />
                 <Route path="/search-results" element={<SearchResults />} />
+                <Route path="/wishlist" element={<WishlistPage />} /> {/* ✅ Added Wishlist Route */}
                 
                 {/*  Catch-all route for unknown URLs */}
                 <Route path="*" element={<NotFound />} />

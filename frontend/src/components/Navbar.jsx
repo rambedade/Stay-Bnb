@@ -41,19 +41,17 @@ const Navbar = ({ onSearch }) => {
   };
 
   // ✅ Handle Logout
-// ✅ Handle Logout
-const handleLogout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("userId");
-  setIsLoggedIn(false);
-  setIsDropdownOpen(false);
-  navigate("/");
-  
-  setTimeout(() => {
-    window.location.reload(); // ✅ Refresh the page after logout
-  }, 100); // ✅ Small delay to ensure smooth transition
-};
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    setIsLoggedIn(false);
+    setIsDropdownOpen(false);
+    navigate("/");
 
+    setTimeout(() => {
+      window.location.reload(); // ✅ Refresh the page after logout
+    }, 100);
+  };
 
   // ✅ Handle Search Input Change
   const handleSearchChange = (e) => {
@@ -65,15 +63,12 @@ const handleLogout = () => {
     <header className="sticky top-0 z-50 bg-white shadow-md px-4 md:px-10 py-7 flex flex-col md:flex-row items-center w-full">
       <div className="flex w-full items-center justify-between md:justify-between">
         {/* ✅ Left - Logo */}
-        <button
-          className="flex items-center gap-2 cursor-pointer"
-          onClick={() => navigate("/")}
-        >
+        <button className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
           <img src={logo2} alt="StayBnb Logo" className="h-10" />
           <h4 className="text-rose-500 text-2xl font-bold">StayBnb</h4>
         </button>
 
-        {/* ✅ Center - Search Bar (Mobile Below, Desktop Centered) */}
+        {/* ✅ Center - Search Bar (Desktop Centered) */}
         <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-full max-w-xl">
           <div className="flex items-center border rounded-full border-gray-300 px-4 py-3 md:py-2 shadow-sm hover:shadow-md h-14 transition-all bg-white w-full">
             <input
@@ -89,13 +84,12 @@ const handleLogout = () => {
           </div>
         </div>
 
-        {/* ✅ Right - User Menu (Now Properly Aligned) */}
+        {/* ✅ Right - User Menu */}
         <div className="flex items-center gap-4 md:gap-6 relative">
           <span className="hidden md:block text-black font-semibold cursor-pointer text-md">
             Switch to hosting
           </span>
 
-          {/* ✅ User Menu Button */}
           {/* ✅ User Menu Button */}
           <div
             className="flex items-center h-12 w-22 gap-2 border border-gray-300 px-4 py-2 rounded-full shadow-sm hover:shadow transition-all cursor-pointer bg-white relative z-20"
@@ -105,7 +99,7 @@ const handleLogout = () => {
             <BiUserCircle size={28} />
           </div>
 
-          {/* ✅ Dropdown Menu (Now Closes When Clicking Outside & Mouse Leaves) */}
+          {/* ✅ Dropdown Menu */}
           {isDropdownOpen && (
             <div
               ref={dropdownRef}
@@ -134,12 +128,36 @@ const handleLogout = () => {
                   </button>
                 </>
               ) : (
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                >
-                  Logout
-                </button>
+                <>
+                  {/* ✅ "My Bookings" Option */}
+                  <button
+                    onClick={() => {
+                      navigate("/booking-history");
+                      setIsDropdownOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    📌 My Bookings
+                  </button>
+
+                  {/* ✅ "My Wishlist" Option */}
+                  <button
+                    onClick={() => {
+                      navigate("/wishlist");
+                      setIsDropdownOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    ❤️ My Wishlist
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </>
               )}
 
               <hr className="my-2" />
@@ -157,7 +175,7 @@ const handleLogout = () => {
         </div>
       </div>
 
-      {/* ✅ Mobile Search Bar (Below Logo & User Menu) */}
+      {/* ✅ Mobile Search Bar */}
       <div className="w-full flex justify-center mt-3 md:hidden">
         <div className="flex items-center border rounded-full border-gray-300 px-4 py-3 shadow-sm hover:shadow-md h-14 transition-all bg-white w-full">
           <input
