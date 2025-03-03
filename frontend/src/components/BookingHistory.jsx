@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import {BASE_URL} from "../config"
+import { BASE_URL } from "../config"; // Ensure BASE_URL is set to your backend URL
 
 const BookingHistory = () => {
-  const [bookings, setBookings] = useState([]);
+  const [bookings, setBookings] = useState([]); // ✅ Initialize as an empty array
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchBookings = async () => {
-      const token = localStorage.getItem("token"); // Get JWT token
+      const token = localStorage.getItem("token");
 
       if (!token) {
         setError("Unauthorized. Please log in.");
@@ -18,18 +18,22 @@ const BookingHistory = () => {
 
       try {
         const response = await fetch(`${BASE_URL}/api/bookings/user`, {
+          method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,
           },
         });
 
         const data = await response.json();
+        console.log("🔍 API Response:", data); // ✅ Debugging log
+
         if (response.ok) {
-          setBookings(data);
+          setBookings(Array.isArray(data.bookings) ? data.bookings : []); // ✅ Fix: Ensure it's always an array
         } else {
           setError(data.message || "Failed to fetch bookings.");
         }
       } catch (err) {
+        console.error("❌ Error fetching bookings:", err);
         setError("Something went wrong. Try again.");
       } finally {
         setLoading(false);
@@ -50,10 +54,14 @@ const BookingHistory = () => {
       ) : (
         bookings.map((booking) => (
           <div key={booking._id} className="bg-white shadow-md p-6 rounded-lg mb-4">
-            <h2 className="text-xl font-semibold">{booking.propertyId.name}</h2>
-            <p className="text-gray-600">{booking.propertyId.smart_location}</p>
-            <p className="text-gray-600">Check-in: {booking.checkIn}</p>
-            <p className="text-gray-600">Check-out: {booking.checkOut}</p>
+            <h2 className="text-xl font-semibold">
+              {booking.propertyId?.name || "Unknown Property"}
+            </h2>
+            <p className="text-gray-600">
+              {booking.propertyId?.smart_location || "Unknown Location"}
+            </p>
+            <p className="text-gray-600">Check-in: {new Date(booking.checkIn).toLocaleDateString()}</p>
+            <p className="text-gray-600">Check-out: {new Date(booking.checkOut).toLocaleDateString()}</p>
             <p className="text-gray-600 font-semibold">
               Status: <span className="text-green-500">Confirmed</span>
             </p>
