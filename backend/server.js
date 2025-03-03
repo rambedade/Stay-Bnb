@@ -175,10 +175,5 @@ app.get("/api/bookings/user", verifyToken, async (req, res) => {
 });
 
 
-// Search properties by name or location
-
-
-
-
 // Start Server
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
