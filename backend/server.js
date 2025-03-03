@@ -6,7 +6,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Property = require("./models/property");
 const User = require("./models/User");
-const Booking = require("./models/Booking")
 
 dotenv.config();
 
@@ -36,19 +35,17 @@ app.get("/api/properties", async (req, res) => {
   }
 });
 
-
-
 app.get("/api/properties/search", async (req, res) => {
   try {
-    const { query } = req.query; // Get search term from URL params
+    const { query } = req.query;
     if (!query) {
       return res.status(400).json({ message: "Search query is required" });
     }
 
     const properties = await Property.find({
       $or: [
-        { name: { $regex: query, $options: "i" } }, // Case-insensitive name match
-        { smart_location: { $regex: query, $options: "i" } } // Location match
+        { name: { $regex: query, $options: "i" } }, 
+        { smart_location: { $regex: query, $options: "i" } }
       ],
     });
 
@@ -78,7 +75,7 @@ app.post("/api/auth/signup", async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "User already exists" });
 
-    //   Generate salt first
+    // Generate hashed password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -118,9 +115,8 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 // ✅ JWT Middleware - Protect Routes
-// Middleware to verify user authentication
 const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token from "Bearer <token>"
+  const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized. Please log in." });
@@ -128,81 +124,12 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded; // Attach user data to the request
+    req.user = decoded;
     next();
   } catch (error) {
     return res.status(403).json({ message: "Invalid token. Please log in again." });
   }
 };
 
-// ✅ Booking API (Protected Route)
-app.post("/api/bookings", verifyToken, async (req, res) => {
-  try {
-    const { propertyId, checkIn, checkOut, guests } = req.body;
-    const userId = req.user.id; // ✅ Get user ID from the JWT token
-
-    console.log("📢 Creating booking for user:", userId); // ✅ Debugging log
-
-    // Create new booking
-    const booking = new Booking({
-      userId, // ✅ This should be the logged-in user's ID
-      propertyId,
-      checkIn,
-      checkOut,
-      guests,
-    });
-
-    await booking.save();
-    console.log("✅ Booking saved with userId:", userId);
-    
-    res.status(201).json({ message: "Booking confirmed!", booking });
-  } catch (error) {
-    res.status(500).json({ message: "Error saving booking", error: error.message });
-  }
-});
-
-
-// ✅ Get User's Booking History (Protected Route)
-
-app.get("/api/bookings/user", verifyToken, async (req, res) => {
-  try {
-    let userId = req.user.id;
-    console.log("📢 Fetching bookings for user:", userId);
-
-    // ✅ Ensure userId is valid before converting
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      console.log("❌ Invalid userId format:", userId);
-      return res.status(400).json({ message: "Invalid user ID format" });
-    }
-
-    userId = new mongoose.Types.ObjectId(userId); // ✅ Correct conversion to ObjectId
-
-    console.log("🔍 Querying MongoDB for bookings...");
-    const bookings = await Booking.find({ userId })
-      .populate({
-        path: "propertyId",
-        select: "name smart_location",
-      });
-
-    console.log("🔍 Query Result:", bookings);
-
-    if (!bookings || bookings.length === 0) {
-      console.log("🚨 No bookings found for user:", userId);
-      return res.json({ message: "No bookings found", bookings: [] });
-    }
-
-    console.log("✅ Found bookings for user:", userId, bookings);
-    res.json({ message: "Bookings retrieved successfully", bookings });
-  } catch (error) {
-    console.error("❌ Error fetching bookings:", error.stack);
-    res.status(500).json({ message: "Error fetching bookings", error: error.message });
-  }
-});
-
-
-
-
-
-
-// Start Server
+// ✅ Start Server
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
