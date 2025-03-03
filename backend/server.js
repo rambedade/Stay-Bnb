@@ -163,15 +163,19 @@ app.post("/api/bookings", verifyToken, async (req, res) => {
 
 
 // ✅ Get User's Booking History (Protected Route)
+const mongoose = require("mongoose");
+
 app.get("/api/bookings/user", verifyToken, async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id; // ✅ Extract userId from JWT token
     console.log("📢 Fetching bookings for user:", userId); // ✅ Debugging log
 
-    const bookings = await Booking.find({ userId }).populate({
-      path: "propertyId",
-      select: "name smart_location",
-    });
+    // ✅ Convert userId to ObjectId to match MongoDB format
+    const bookings = await Booking.find({ userId: new mongoose.Types.ObjectId(userId) })
+      .populate({
+        path: "propertyId",
+        select: "name smart_location",
+      });
 
     if (!bookings || bookings.length === 0) {
       console.log("🚨 No bookings found for user:", userId);
@@ -185,6 +189,7 @@ app.get("/api/bookings/user", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Error fetching bookings", error: error.message });
   }
 });
+
 
 
 
