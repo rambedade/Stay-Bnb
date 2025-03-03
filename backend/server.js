@@ -166,11 +166,11 @@ app.post("/api/bookings", verifyToken, async (req, res) => {
 
 app.get("/api/bookings/user", verifyToken, async (req, res) => {
   try {
-    const userId = req.user.id; // ✅ Extract userId from JWT token
+    const userId = req.user.id;
     console.log("📢 Fetching bookings for user:", userId); // ✅ Debugging log
 
-    // ✅ Convert userId to ObjectId to match MongoDB format
-    const bookings = await Booking.find({ userId: new mongoose.Types.ObjectId(userId) })
+    // ✅ Convert userId to ObjectId using the correct method
+    const bookings = await Booking.find({ userId: new mongoose.Types.ObjectId.createFromHexString(userId) })
       .populate({
         path: "propertyId",
         select: "name smart_location",
@@ -188,6 +188,7 @@ app.get("/api/bookings/user", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Error fetching bookings", error: error.message });
   }
 });
+
 
 
 
