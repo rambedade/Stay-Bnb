@@ -132,7 +132,6 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-const Booking = require("./models/Booking"); // ✅ Import Booking Model
 
 // ✅ Create Booking Route
 app.post("/api/bookings", verifyToken, async (req, res) => {
