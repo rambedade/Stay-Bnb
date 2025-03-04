@@ -1,9 +1,10 @@
 # 🏡 StayBnb - Airbnb Clone
 
-🚀 A full-stack **MERN-based Airbnb Clone** where users can browse, book properties, and manage bookings with authentication.
+StayBnb is a full-stack MERN application that replicates Airbnb’s core functionality. Users can browse and book vacation rentals, manage their bookings, and add properties to a wishlist. The platform ensures seamless authentication, real-time booking validation, and a user-friendly experience.
 
 ## 🔗 Live Demo
 🎯 **Frontend**: https://staybnb-omega.vercel.app/ 
+
 🎯 **Backend API**: [stay-bnb-wm93.onrender.com](https://stay-bnb-wm93.onrender.com)  
 
 ---
